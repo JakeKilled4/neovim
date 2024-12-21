@@ -83,6 +83,7 @@ return {
 
     -- configure c++ server with plugin
     lspconfig["clangd"].setup({
+      filetypes = { "cpp", "cppm", "c", "objc", "objcpp" },
       capabilities = capabilities,
       on_attach = on_attach,
     })
