@@ -38,7 +38,7 @@ augroup END
 ]])
 
 -- Spelling
-vim.opt.spelllang = 'es_es'
+vim.opt.spelllang = 'en,es'
 vim.opt.spell = false
 
 vim.g.mkdp_auto_start = 1           -- Abre directamente el markdowm

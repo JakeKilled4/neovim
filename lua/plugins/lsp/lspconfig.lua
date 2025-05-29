@@ -35,13 +35,13 @@ return {
       keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
 
       opts.desc = "See available code actions"
-      keymap.set({ "n", "v" }, "<leader>c", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
+      keymap.set({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
 
       opts.desc = "Smart rename"
       keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
 
       opts.desc = "Show buffer diagnostics"
-      keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
+      keymap.set("n", "<leader>q", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
 
     -- opts.desc = "Show line diagnostics"
     --keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
@@ -57,6 +57,23 @@ return {
 
       opts.desc = "Restart LSP"
       keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+
+      -- Muestra el error al pasar el cursor encima 
+      vim.api.nvim_create_autocmd("CursorHold", {
+        buffer = bufnr,
+        callback = function()
+          vim.diagnostic.open_float(nil, {
+            focusable = false,
+            close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+            border = "rounded",
+            source = "always",
+            prefix = "",
+            scope = "line",
+          })
+        end,
+      })
+      -- Hace que se muestre antes la venatana de error
+      vim.o.updatetime = 250
     end
 
     -- used to enable autocompletion (assign to every lsp server config)
@@ -64,10 +81,28 @@ return {
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-    for type, icon in pairs(signs) do
-      local hl = "DiagnosticSign" .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, linehl='', numhl = "" })
-    end
+    vim.diagnostic.config({
+        signs = {
+            text = {
+                [vim.diagnostic.severity.ERROR] = signs.Error,
+                [vim.diagnostic.severity.WARN] = signs.Warn,
+                [vim.diagnostic.severity.INFO] = signs.Info,
+                [vim.diagnostic.severity.HINT] = signs.Hint,
+            },
+            linehl = {
+                [vim.diagnostic.severity.ERROR] = '',
+            },
+            numhl = {
+                [vim.diagnostic.severity.WARN] = 'WarningMsg',
+                [vim.diagnostic.severity.ERROR] = 'ErrorMsg',
+            },
+        },
+    })
+    -- Deprecated
+    --for type, icon in pairs(signs) do
+    --  local hl = "DiagnosticSign" .. type
+    --  vim.fn.sign_define(hl, { text = icon, texthl = hl, linehl='', numhl = "" })
+    --end
 
     -- configure latex server
     lspconfig["texlab"].setup({
@@ -117,7 +152,6 @@ return {
       capabilities = capabilities,
       on_attach = on_attach,
     })
-
     -- configure lua server (with special settings)
     lspconfig["lua_ls"].setup({
       capabilities = capabilities,
