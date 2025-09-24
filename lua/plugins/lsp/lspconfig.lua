@@ -7,15 +7,19 @@ return {
   },
   config = function()
     -- import lspconfig plugin
-    local lspconfig = require("lspconfig")
+    --local lspconfig = require("lspconfig")
 
     -- import cmp-nvim-lsp plugin
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
+    -- used to enable autocompletion (assign to every lsp server config)
+    local capabilities = cmp_nvim_lsp.default_capabilities()
+
     local keymap = vim.keymap -- for conciseness
 
-    local opts = { noremap = true, silent = true }
-    local on_attach = function(client, bufnr)
+    local on_attach = function(_, bufnr)
+
+      local opts = { noremap = true, silent = true, buffer=bufnr}
       opts.buffer = bufnr
 
       -- set keybinds
@@ -76,8 +80,6 @@ return {
       vim.o.updatetime = 250
     end
 
-    -- used to enable autocompletion (assign to every lsp server config)
-    local capabilities = cmp_nvim_lsp.default_capabilities()
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
@@ -98,62 +100,58 @@ return {
             },
         },
     })
-    -- Deprecated
-    --for type, icon in pairs(signs) do
-    --  local hl = "DiagnosticSign" .. type
-    --  vim.fn.sign_define(hl, { text = icon, texthl = hl, linehl='', numhl = "" })
-    --end
 
     -- configure latex server
-    lspconfig["texlab"].setup({
+    vim.lsp.config("texlab", {
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure bash server
-    lspconfig["bashls"].setup({
+    vim.lsp.config("bashls", {
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure c++ server with plugin
-    lspconfig["clangd"].setup({
+    vim.lsp.config("clangd", {
       filetypes = { "cpp", "cppm", "c", "objc", "objcpp" },
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure html server
-    lspconfig["html"].setup({
+    vim.lsp.config("html",{
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure java server
-    lspconfig["jdtls"].setup({
+    vim.lsp.config("jdtls",{
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure markdown server
-    lspconfig["marksman"].setup({
+    vim.lsp.config("marksman", {
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure yaml server
-    lspconfig["yamlls"].setup({
+    vim.lsp.config("yamlls",{
       capabilities = capabilities,
       on_attach = on_attach,
     })
 
     -- configure python server
-    lspconfig["pyright"].setup({
+    vim.lsp.config("pyright",{
       capabilities = capabilities,
       on_attach = on_attach,
     })
+
     -- configure lua server (with special settings)
-    lspconfig["lua_ls"].setup({
+    vim.lsp.config("lua_ls",{
       capabilities = capabilities,
       on_attach = on_attach,
       settings = { -- custom settings for lua
