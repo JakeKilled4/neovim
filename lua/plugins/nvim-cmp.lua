@@ -9,11 +9,14 @@ return {
     "saadparwaiz1/cmp_luasnip", -- for autocompletion
     "rafamadriz/friendly-snippets", -- useful snippets
     "onsails/lspkind.nvim", -- vs-code like pictograms
+    "zbirenbaum/copilot-cmp", -- Copilot
   },
   config = function()
     local cmp = require("cmp")
 
     local luasnip = require("luasnip")
+
+    require("copilot_cmp").setup()
 
     local lspkind = require("lspkind")
     local function border(hl_name)
@@ -67,6 +70,7 @@ return {
       }),
       -- sources for autocompletion
       sources = cmp.config.sources({
+        { name = "copilot", group_index = 2 }, -- copilot suggestions,
         { name = "nvim_lsp" }, -- lsp
         { name = "luasnip" }, -- snippets
         { name = "buffer" }, -- text within current buffer
@@ -78,6 +82,7 @@ return {
         format = lspkind.cmp_format({
           maxwidth = 50,
           ellipsis_char = "...",
+          symbol_map = { Copilot = "" }
         }),
       },
     })
